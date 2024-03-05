@@ -12,7 +12,7 @@ from utils import format_func
 
 
 st.set_page_config(
-    page_title="AI Blog Generator",
+    page_title="AutoBlog: AI Blog Generator",
     page_icon="✨",
     layout="wide",
     initial_sidebar_state="auto",
