@@ -1,13 +1,22 @@
 import time
 import re
 import glob
-import streamlit as st
 import os
+import streamlit as st
 import pandas as pd
 from litellm import completion
 
 
 def get_ai_completion(text):
+    """
+    Get AI completion for the given text.
+
+    Args:
+        text (str): The input text for AI completion.
+
+    Returns:
+        str: The AI-generated completion for the given text.
+    """
     response = completion(
         model="ollama/mistral:7b-instruct",
         messages=[{"content": text, "role": "user"}],
@@ -19,6 +28,15 @@ def get_ai_completion(text):
 
 
 def fetch_sections_from_outline(outline):
+    """
+    Fetches sections from an outline.
+
+    Args:
+        outline (str): The outline to fetch sections from.
+
+    Returns:
+        list: A list of sections extracted from the outline.
+    """
     lines = outline.strip().split("\n")
     sections = []
 
@@ -49,6 +67,15 @@ def fetch_sections_from_outline(outline):
 
 
 def fetch_existing_blogs(topic):
+    """
+    Fetches the names of existing blogs for a given topic.
+
+    Args:
+        topic (str): The topic for which to fetch existing blogs.
+
+    Returns:
+        list: A list of existing blog names (without the file extension).
+    """
     existing_blogs = []
     folder_path = f"blogs/{topic}"
     if os.path.exists(folder_path):
@@ -59,6 +86,17 @@ def fetch_existing_blogs(topic):
 
 
 def save_text_as_markdown(text, suggested_topic, topic):
+    """
+    Save the given text as a markdown file with the suggested topic.
+
+    Args:
+        text (str): The text content to be saved as markdown.
+        suggested_topic (str): The suggested topic for the markdown file.
+        topic (str): The main topic or category for organizing the markdown files.
+
+    Returns:
+        None
+    """
     # Remove any leading or trailing quotes from suggested_topic if any
     suggested_topic = suggested_topic.strip().strip('"').strip("'")
     # Remove trailing period if any
@@ -72,6 +110,20 @@ def save_text_as_markdown(text, suggested_topic, topic):
 
 
 def generate_blog(topic, blog_count, format_blog):
+    """
+    Generate a blog post based on the given topic.
+
+    Args:
+        topic (str): The topic for the blog post.
+        blog_count (int): The number of blog posts to generate.
+        format_blog (bool): Flag indicating whether to format the blog post.
+
+    Yields:
+        str: Each step of the blog generation process.
+
+    Returns:
+        None
+    """
     blogs = fetch_existing_blogs(topic)
     for i in range(blog_count):
         # Log time to generate each blog
@@ -122,6 +174,21 @@ def generate_blog(topic, blog_count, format_blog):
 
 
 def list_md_files(directory):
+    """
+    Retrieve information about Markdown files in a given directory.
+
+    Args:
+        directory (str): The directory path to search for Markdown files.
+
+    Returns:
+        list: A list of lists containing information about each Markdown file.
+              Each inner list contains the following information:
+              - Topic: The topic of the file (derived from the directory structure).
+              - Filename: The name of the Markdown file.
+              - Lines: The number of lines in the file.
+              - Words: The number of words in the file.
+              - Characters: The number of characters in the file.
+    """
     files_data = []
     for file in glob.glob(f"{directory}/**/*.md", recursive=True):
         with open(file, "r", encoding="utf-8") as file_obj:
